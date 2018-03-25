@@ -1,4 +1,4 @@
-# Huffman_Encoder
+# Huffman_Archiver
 
 Visual Studio 2017 C++ Console Project
 
