@@ -37,6 +37,37 @@ void OutputBitStream::put(bool bit)
 	}
 }
 
+void OutputBitStream::write(ushort word, byte num)
+{
+	while (num > 0)
+	{
+		// Clear not-needed bits
+		word = (word << 8 * sizeof word - num);
+		word = (word >> 8 * sizeof word - num);
+
+		byte currentNum;
+
+		if (num + numberOfPendingBits <= 8 * sizeof buffer)
+		{
+			currentNum = num;
+		}
+		else
+		{
+			currentNum = 8 * sizeof buffer - numberOfPendingBits;
+		}
+
+		num -= currentNum;
+		buffer = (buffer << currentNum);
+		buffer += (word >> num);
+		numberOfPendingBits += currentNum;
+
+		if (numberOfPendingBits == 8 * sizeof buffer)
+		{
+			flush();
+		}
+	}
+}
+
 void OutputBitStream::flush()
 {
 	fwrite(&buffer, sizeof buffer, 1, outputFile);

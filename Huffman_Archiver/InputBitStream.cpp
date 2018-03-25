@@ -36,36 +36,32 @@ bool InputBitStream::get()
 
 byte InputBitStream::read(byte num)
 {
-	byte b;
+	byte b = 0;
 
-	if (numberOfPendingBits >= num)
+	while (num > 0)
 	{
-		b = (buffer >> 8 * sizeof buffer - num);
-		buffer = buffer << num;
-		numberOfPendingBits -= num;
-	}
-	else
-	{
-		byte delta;
-		delta = num - numberOfPendingBits;
+		byte currentNum;
 
-		b = (buffer >> 8 * sizeof buffer - numberOfPendingBits);
-		buffer = buffer << numberOfPendingBits;
-		numberOfPendingBits = 0;
+		if (numberOfPendingBits >= num)
+		{
+			currentNum = num;
+		}
+		else
+		{
+			currentNum = numberOfPendingBits;
+		}
 
-		getWord();
-		if (eof()) return b;
+		b = (b << currentNum);
+		b += (buffer >> 8 * sizeof buffer - currentNum);
+		buffer = (buffer << currentNum);
+		numberOfPendingBits -= currentNum;
+		num -= currentNum;
 
-		b = (b << delta);
-		
-		b += (buffer >> 8 * sizeof buffer - delta);
-		buffer = buffer << delta;
-		numberOfPendingBits -= delta;
-	}
-	
-	if (numberOfPendingBits == 0)
-	{
-		getWord();
+		if (numberOfPendingBits == 0)
+		{
+			getWord();
+			if (eof()) return b;
+		}
 	}
 
 	return b;
