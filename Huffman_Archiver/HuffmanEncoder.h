@@ -1,51 +1,50 @@
 #pragma once
 
+#include "TypeAliases.h"
 #include "OutputBitStream.h"
-#include <cstdio>
+#include "File.h"
 #include <vector>
 #include <stack>
 
-using byte = unsigned char;
-using ushort = unsigned short;
-using uint = unsigned int;
-using ulong = unsigned long long;
 
+namespace MyLib
+{
 
-class Node_w
+class WNode
 {
 public:
 	// For last level
-	Node_w(uint w, byte b) : left(nullptr), right(nullptr), w(w), b(b) {}
+	WNode(uint w, byte b) : left(nullptr), right(nullptr), w(w), b(b) {}
 	// For all levels, except last
-	Node_w(Node_w* left, Node_w* right, uint w) : left(left), right(right), w(w) {}
-	Node_w(const Node_w& node) = delete;
+	WNode(WNode* left, WNode* right, uint w) : left(left), right(right), w(w) {}
+	WNode(const WNode& node) = delete;
 
-	~Node_w() { delete left; delete right; }
+	~WNode() { delete left; delete right; }
 
-	inline Node_w* getLeft() const { return left; }
-	inline Node_w* getRight() const { return right; }
+	inline WNode* getLeft() const { return left; }
+	inline WNode* getRight() const { return right; }
 	inline uint getWeight() const { return w; }
 	inline byte getByte() const { return b; }
 
-	Node_w& operator= (const Node_w& node) = delete;
+	WNode& operator= (const WNode& node) = delete;
 
 private:
-	Node_w* left;		// Edge. Weight == 0
-	Node_w* right;		// Edge. Weight == 1
+	WNode* left;		// Edge. Weight == 0
+	WNode* right;		// Edge. Weight == 1
 	uint w;				// Weight (count of occurrences)
 	byte b;				// byte
 };
 
-struct CmpNode_wPtr_LessOrEqual
+struct CmpWNodePtr_LessOrEqual
 {
-	bool operator() (const Node_w* node1, const Node_w* node2) { return node1->getWeight() <= node2->getWeight(); }
+	bool operator() (const WNode* node1, const WNode* node2) { return node1->getWeight() <= node2->getWeight(); }
 };
 
 struct TraverseDump
 {
-	TraverseDump(Node_w* node, ushort code, byte codeLength) : node(node), code(code), codeLength(codeLength) {}
+	TraverseDump(WNode* node, ushort code, byte codeLength) : node(node), code(code), codeLength(codeLength) {}
 
-	Node_w* node;
+	WNode* node;
 	ushort code;
 	byte codeLength;
 };
@@ -55,8 +54,6 @@ class HuffmanEncoder
 public:
 	HuffmanEncoder(const char* filePath);
 	HuffmanEncoder(const HuffmanEncoder& huffmanEnc) = delete;
-
-	~HuffmanEncoder();
 
 	void encodeToFile(const char* outputFilePath);
 
@@ -72,7 +69,7 @@ private:
 	void encode();
 
 private:
-	std::FILE* inputFile;
+	File inputFile;
 
 	ulong outputCodeLength;
 
@@ -80,3 +77,4 @@ private:
 	std::vector<std::pair<ushort, byte>> codes;
 };
 
+}

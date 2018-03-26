@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdio>
+#include "TypeAliases.h"
+#include "File.h"
 
-using byte = unsigned char;
-using ushort = unsigned short;
 
+namespace MyLib
+{
 
 class OutputBitStream
 {
@@ -23,7 +24,7 @@ private:
 	void flush();
 
 private:
-	std::FILE* outputFile;
+	File outputFile;
 
 	byte buffer;
 
@@ -31,3 +32,4 @@ private:
 	char numberOfPendingBits;
 };
 
+}

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "HuffmanEncoder.h"
 #include <set>
+#include <utility>
+
+
+namespace MyLib
+{
 
 using namespace std;
 
@@ -8,13 +13,8 @@ using namespace std;
 HuffmanEncoder::HuffmanEncoder(const char * filePath)
 	: codes(numeric_limits<byte>::max() + 1, pair<ushort, byte>(0, 0))
 	, outputCodeLength(0)
+	, inputFile(filePath, "rb")
 {
-	fopen_s(&inputFile, filePath, "rb");
-}
-
-HuffmanEncoder::~HuffmanEncoder()
-{
-	fclose(inputFile);
 }
 
 void HuffmanEncoder::encodeToFile(const char * outputFilePath)
@@ -45,10 +45,10 @@ void HuffmanEncoder::encodeToFile(const char * outputFilePath)
 	obstream.write((byte)(outputCodeLength % (8 * sizeof(byte))), 8 * sizeof(byte));
 
 	// Write all code
-	while (!feof(inputFile))
+	while (!inputFile.eof())
 	{
 		byte b;
-		fread(&b, sizeof b, 1, inputFile);
+		b = inputFile.read();
 		obstream.write(codes[b].first, codes[b].second);
 	}
 }
@@ -59,31 +59,31 @@ void HuffmanEncoder::encode()
 	vector<uint> weights(numeric_limits<byte>::max() + 1, 0);
 	countWeights(weights);
 
-	set<Node_w*, CmpNode_wPtr_LessOrEqual> tree;
-	
-	// Copy elements from vector of weights to set of Node_ws
+	set<WNode*, CmpWNodePtr_LessOrEqual> tree;
+
+	// Copy elements from vector of weights to set of WNodes
 	for (uint i = 0; i < weights.size(); i++)
 	{
 		if (weights[i] > 0)
 		{
-			tree.insert(new Node_w(weights[i], i));
+			tree.insert(new WNode(weights[i], i));
 		}
 	}
 
 	while (tree.size() > 1)
 	{
 		// Take first minimal element (tree is sorted set)
-		Node_w* left = *tree.begin();
+		WNode* left = *tree.begin();
 		tree.erase(tree.begin());
 
 		// Take second minimal element (tree is sorted set)
-		Node_w* right = *tree.begin();
+		WNode* right = *tree.begin();
 		tree.erase(tree.begin());
 
 		// Insert parent for two minimal elements
-		tree.insert(new Node_w(left, right, left->getWeight() + right->getWeight()));
+		tree.insert(new WNode(left, right, left->getWeight() + right->getWeight()));
 	}
-	
+
 	stack<TraverseDump> traverseStack;
 	traverseStack.emplace(*tree.begin(), 0, 0);
 
@@ -93,13 +93,13 @@ void HuffmanEncoder::encode()
 
 void HuffmanEncoder::countWeights(vector<uint> & weights)
 {
-	while (!feof(inputFile))
+	while (!inputFile.eof())
 	{
 		byte b;
-		fread(&b, sizeof b, 1, inputFile);
+		b = inputFile.read();
 		weights[b]++;
 	}
-	rewind(inputFile);
+	inputFile.rewind();
 }
 
 void HuffmanEncoder::traverseAndSetCodes(stack<TraverseDump> & traverseStack)
@@ -123,3 +123,4 @@ void HuffmanEncoder::traverseAndSetCodes(stack<TraverseDump> & traverseStack)
 	}
 }
 
+}

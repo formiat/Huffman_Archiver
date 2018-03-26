@@ -1,14 +1,18 @@
 #include "stdafx.h"
 #include "OutputBitStream.h"
 
+
+namespace MyLib
+{
+
 using namespace std;
 
 
 OutputBitStream::OutputBitStream(const char * filePath)
 	: numberOfPendingBits(0)
 	, buffer(0)
+	, outputFile(filePath, "wb")
 {
-	fopen_s(&outputFile, filePath, "wb");
 }
 
 OutputBitStream::~OutputBitStream()
@@ -16,9 +20,8 @@ OutputBitStream::~OutputBitStream()
 	if (numberOfPendingBits > 0)
 	{
 		buffer = (buffer << 8 * sizeof buffer - numberOfPendingBits);
-		fwrite(&buffer, sizeof buffer, 1, outputFile);
+		outputFile.write(buffer);
 	}
-	fclose(outputFile);
 }
 
 void OutputBitStream::put(bool bit)
@@ -28,7 +31,7 @@ void OutputBitStream::put(bool bit)
 	{
 		buffer += 1;
 	}
-	
+
 	numberOfPendingBits++;
 
 	if (numberOfPendingBits == 8 * sizeof buffer)
@@ -70,7 +73,9 @@ void OutputBitStream::write(ushort word, byte num)
 
 void OutputBitStream::flush()
 {
-	fwrite(&buffer, sizeof buffer, 1, outputFile);
+	outputFile.write(buffer);
 	buffer = 0;
 	numberOfPendingBits = 0;
+}
+
 }

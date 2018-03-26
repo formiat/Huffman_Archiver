@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdio>
+#include "TypeAliases.h"
+#include "File.h"
 
-using byte = unsigned char;
-using ushort = unsigned short;
 
+namespace MyLib
+{
 
 class InputBitStream
 {
@@ -17,20 +18,18 @@ public:
 	// Returns num bits of the byte from file
 	byte read(byte num);
 
-	inline bool eof() const { return std::feof(inputFile); }
+	inline bool eof() const { return inputFile.eof(); }
 
-	inline bool lastByte() const { return std::ftell(inputFile) == lastByteNumber; }
+	inline bool lastByte() const { return inputFile.tell() == lastByteNumber; }
 
 	void clear();
 	void seekg(long offset, int origin);
-
-	~InputBitStream();
 
 private:
 	void getWord();
 
 private:
-	std::FILE* inputFile;
+	File inputFile;
 
 	long lastByteNumber;
 
@@ -40,3 +39,4 @@ private:
 	char numberOfPendingBits;
 };
 
+}

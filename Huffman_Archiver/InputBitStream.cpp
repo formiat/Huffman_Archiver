@@ -1,20 +1,23 @@
 #include "stdafx.h"
 #include "InputBitStream.h"
 
+
+namespace MyLib
+{
+
 using namespace std;
 
 
 InputBitStream::InputBitStream(const char * filePath)
 	: numberOfPendingBits(0)
 	, buffer(0)
+	, inputFile(filePath, "rb")
 {
-	fopen_s(&inputFile, filePath, "rb");
+	inputFile.seek(0, SEEK_END);
 
-	fseek(inputFile, 0, SEEK_END);
+	lastByteNumber = inputFile.tell();
 
-	lastByteNumber = ftell(inputFile);
-
-	fseek(inputFile, 0, SEEK_SET);
+	inputFile.seek(0, SEEK_SET);
 }
 
 bool InputBitStream::get()
@@ -26,7 +29,7 @@ bool InputBitStream::get()
 	}
 
 	bool tempBuffer = (bool)(0x80 & buffer);
-	
+
 	buffer = buffer << 1;
 
 	numberOfPendingBits--;
@@ -69,23 +72,18 @@ byte InputBitStream::read(byte num)
 
 void InputBitStream::clear()
 {
-	rewind(inputFile);
+	inputFile.rewind();
 }
 
 void InputBitStream::seekg(long offset, int origin)
 {
-	fseek(inputFile, offset, origin);
-}
-
-InputBitStream::~InputBitStream()
-{
-	fclose(inputFile);
+	inputFile.seek(offset, origin);
 }
 
 void InputBitStream::getWord()
 {
-	fread(&buffer, sizeof buffer, 1, inputFile);
-	
+	buffer = inputFile.read();
+
 	if (eof())
 	{
 		buffer = 0;
@@ -95,3 +93,4 @@ void InputBitStream::getWord()
 	numberOfPendingBits = 8 * sizeof buffer;
 }
 
+}

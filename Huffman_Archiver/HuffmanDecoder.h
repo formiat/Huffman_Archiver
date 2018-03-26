@@ -1,12 +1,12 @@
 #pragma once
 
+#include "TypeAliases.h"
 #include "InputBitStream.h"
 #include <vector>
 
-using byte = unsigned char;
-using ushort = unsigned short;
-using uint = unsigned int;
 
+namespace MyLib
+{
 
 class Node
 {
@@ -19,7 +19,6 @@ public:
 	inline Node* getLeft() const { return left; }
 	inline Node* getRight() const { return right; }
 	inline byte getByte() const { return b; }
-	inline const byte* getBytePtr() const { return &b; }
 
 	inline void setLeft(Node* l) { left = l; }
 	inline void setRight(Node* r) { right = r; }
@@ -55,3 +54,4 @@ private:
 	Node* head;
 };
 
+}

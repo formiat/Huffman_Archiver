@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "HuffmanDecoder.h"
-#include <cstdio>
+#include "File.h"
+
+
+namespace MyLib
+{
 
 using namespace std;
 
@@ -18,8 +22,7 @@ HuffmanDecoder::~HuffmanDecoder()
 
 void HuffmanDecoder::decodeToFile(const char * resultFilePath)
 {
-	FILE* outputFile;
-	fopen_s(&outputFile, resultFilePath, "wb");
+	File outputFile(resultFilePath, "wb");
 	InputBitStream ibstream(inputFilePath.c_str());
 	byte numOfBitsInLastByte;
 
@@ -33,7 +36,7 @@ void HuffmanDecoder::decodeToFile(const char * resultFilePath)
 
 		if (!current->getLeft() && !current->getRight())
 		{
-			fwrite(current->getBytePtr(), sizeof(byte), 1, outputFile);
+			outputFile.write(current->getByte());
 			current = head;
 		}
 
@@ -55,8 +58,6 @@ void HuffmanDecoder::decodeToFile(const char * resultFilePath)
 			}
 		}
 	}
-
-	fclose(outputFile);
 }
 
 void HuffmanDecoder::parseCodesAndFillTree(InputBitStream & ibstream, byte & numOfBitsInLastByte)
@@ -102,3 +103,4 @@ void HuffmanDecoder::parseCodesAndFillTree(InputBitStream & ibstream, byte & num
 	}
 }
 
+}
