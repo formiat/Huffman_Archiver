@@ -55,6 +55,8 @@ public:
 	HuffmanEncoder(const char* filePath);
 	HuffmanEncoder(const HuffmanEncoder& huffmanEnc) = delete;
 
+	~HuffmanEncoder();
+
 	void encodeToFile(const char* outputFilePath);
 
 	HuffmanEncoder& operator= (const HuffmanEncoder& huffmanEnc) = delete;
@@ -62,6 +64,8 @@ public:
 private:
 	// Count weight for every symbol. Returns inputFileStream to zero position.
 	void countWeights(std::vector<uint>& weights);
+
+	void createTreeAndSetHead(std::vector<uint>& weights);
 
 	// Traverse tree and set codes
 	void traverseAndSetCodes(std::stack<TraverseDump>& traverseStack);
@@ -75,6 +79,8 @@ private:
 
 	// Vector of codes of bytes
 	std::vector<std::pair<ushort, byte>> codes;
+
+	WNode* head;
 };
 
 }

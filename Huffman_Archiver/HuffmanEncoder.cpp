@@ -17,6 +17,11 @@ HuffmanEncoder::HuffmanEncoder(const char * filePath)
 {
 }
 
+HuffmanEncoder::~HuffmanEncoder()
+{
+	delete head;
+}
+
 void HuffmanEncoder::encodeToFile(const char * outputFilePath)
 {
 	encode();
@@ -57,8 +62,30 @@ void HuffmanEncoder::encode()
 {
 	// Vector of weight of bytes
 	vector<uint> weights(numeric_limits<byte>::max() + 1, 0);
+	
 	countWeights(weights);
 
+	createTreeAndSetHead(weights);
+
+	stack<TraverseDump> traverseStack;
+	traverseStack.emplace(head, 0, 0);
+
+	traverseAndSetCodes(traverseStack);
+}
+
+void HuffmanEncoder::countWeights(vector<uint> & weights)
+{
+	while (!inputFile.eof())
+	{
+		byte b;
+		b = inputFile.read();
+		weights[b]++;
+	}
+	inputFile.rewind();
+}
+
+void HuffmanEncoder::createTreeAndSetHead(std::vector<uint> & weights)
+{
 	set<WNode*, CmpWNodePtr_LessOrEqual> tree;
 
 	// Copy elements from vector of weights to set of WNodes
@@ -84,22 +111,7 @@ void HuffmanEncoder::encode()
 		tree.insert(new WNode(left, right, left->getWeight() + right->getWeight()));
 	}
 
-	stack<TraverseDump> traverseStack;
-	traverseStack.emplace(*tree.begin(), 0, 0);
-
-	traverseAndSetCodes(traverseStack);
-	delete *tree.begin();
-}
-
-void HuffmanEncoder::countWeights(vector<uint> & weights)
-{
-	while (!inputFile.eof())
-	{
-		byte b;
-		b = inputFile.read();
-		weights[b]++;
-	}
-	inputFile.rewind();
+	head = *tree.begin();
 }
 
 void HuffmanEncoder::traverseAndSetCodes(stack<TraverseDump> & traverseStack)
