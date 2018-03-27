@@ -27,13 +27,11 @@ void HuffmanDecoder::decodeToFile(const char * resultFilePath)
 	byte numOfBitsInLastByte;
 
 	parseCodesAndFillTree(ibstream, numOfBitsInLastByte);
-
+	
+	bool bitOfCode = ibstream.get();
 	Node* current = head;
 	while (!ibstream.eof())
 	{
-		bool bitOfCode;
-		bitOfCode = ibstream.get();
-
 		if (!current->getLeft() && !current->getRight())
 		{
 			outputFile.write(current->getByte());
@@ -57,6 +55,8 @@ void HuffmanDecoder::decodeToFile(const char * resultFilePath)
 				break;
 			}
 		}
+
+		bitOfCode = ibstream.get();
 	}
 }
 
