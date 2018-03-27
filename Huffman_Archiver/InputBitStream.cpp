@@ -53,17 +53,4 @@ byte InputBitStream::read(byte num)
 	return b;
 }
 
-void InputBitStream::getWord()
-{
-	buffer = inputFile.read();
-
-	if (eof())
-	{
-		buffer = 0;
-		return;
-	}
-
-	numberOfPendingBits = 8 * sizeof buffer;
-}
-
 }
