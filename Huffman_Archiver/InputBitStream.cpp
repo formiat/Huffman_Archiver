@@ -20,23 +20,6 @@ InputBitStream::InputBitStream(const char * filePath)
 	inputFile.seek(0, SEEK_SET);
 }
 
-bool InputBitStream::get()
-{
-	if (numberOfPendingBits == 0)
-	{
-		getWord();
-		if (eof()) return 0;
-	}
-
-	bool tempBuffer = (bool)(0x80 & buffer);
-
-	buffer = buffer << 1;
-
-	numberOfPendingBits--;
-
-	return tempBuffer;
-}
-
 byte InputBitStream::read(byte num)
 {
 	byte b = 0;

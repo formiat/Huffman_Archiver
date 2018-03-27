@@ -39,4 +39,21 @@ private:
 	char numberOfPendingBits;
 };
 
+bool InputBitStream::get()
+{
+	if (numberOfPendingBits == 0)
+	{
+		getWord();
+		if (eof()) return 0;
+	}
+
+	bool tempBuffer = (bool)(0x80 & buffer);
+
+	buffer = buffer << 1;
+
+	numberOfPendingBits--;
+
+	return tempBuffer;
+}
+
 }
