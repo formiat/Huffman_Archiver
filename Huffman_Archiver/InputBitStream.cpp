@@ -53,16 +53,6 @@ byte InputBitStream::read(byte num)
 	return b;
 }
 
-void InputBitStream::clear()
-{
-	inputFile.rewind();
-}
-
-void InputBitStream::seekg(long offset, int origin)
-{
-	inputFile.seek(offset, origin);
-}
-
 void InputBitStream::getWord()
 {
 	buffer = inputFile.read();

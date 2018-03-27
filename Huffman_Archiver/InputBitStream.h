@@ -22,8 +22,8 @@ public:
 
 	inline bool lastByte() const { return inputFile.tell() == lastByteNumber; }
 
-	void clear();
-	void seekg(long offset, int origin);
+	void clear() { inputFile.rewind(); }
+	void seekg(long offset, int origin) { inputFile.seek(offset, origin); }
 
 private:
 	void getWord();
